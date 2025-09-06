@@ -1,4 +1,3 @@
-from django.utils import timezone
 from rest_framework import serializers
 from tasks.models import Task
 from users.models import User
@@ -7,14 +6,14 @@ from users.models import User
 class TaskUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "first_name", "last_name", "email"]
+        fields = ["id"]
         read_only_fields = fields
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    posted_by = TaskUserSerializer(read_only=True)
+    posted_by = TaskUserSerializer( read_only=True)
 
     class Meta:
         model = Task
-        exclude = ["is_active"]
-        read_only_fields = ["created_at"]
+        fields = ["id", "title", "description", "due_date", "completed", "posted_by"]
+        read_only_fields = ["id", "posted_by"]

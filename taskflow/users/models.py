@@ -1,34 +1,28 @@
 from django.db import models
 from django.contrib.auth.models import (
-    AbstractBaseUser,
     BaseUserManager,
+    AbstractBaseUser,
     PermissionsMixin,
-    Group,
-    Permission,
 )
 
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
-        """Creates and returns a user with an email and password."""
         if not email:
-            raise ValueError("The Email field is required")
-
+            raise ValueError("El usuario debe tener un email")
         email = self.normalize_email(email)
-        extra_fields.setdefault("is_active", True)  # Ensure active by default
-
         user = self.model(email=email, **extra_fields)
-
-        if password:
-            user.set_password(password)
-        else:
-            raise ValueError("The Password field is required for users")
-
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def get_queryset(self):
-        return super().get_queryset().filter(is_active=True)
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser debe tener is_superuser=True.")
+
+        return self.create_user(email, password, **extra_fields)
 
 
 class Department(models.IntegerChoices):
@@ -50,8 +44,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     department = models.IntegerField(choices=Department.choices)
     is_boss = models.BooleanField(default=False)
 
-    objects = UserManager()
-
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
         "first_name",
@@ -59,20 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         "department",
     ]
 
-    groups = models.ManyToManyField(
-        Group,
-        related_name="custom_user_set",   # <-- evitar choque
-        blank=True
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name="custom_user_permissions_set",  # <-- evitar choque
-        blank=True
-    )
-
-    def delete(self, using=None, keep_parents=None):
-        self.is_active = False
-        self.save()
+    objects = UserManager()
 
     def __str__(self):
         return self.email

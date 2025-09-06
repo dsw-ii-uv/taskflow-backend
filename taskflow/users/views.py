@@ -1,40 +1,30 @@
-from rest_framework import generics, status
+from django.contrib.auth import login
+from rest_framework import generics, permissions
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authtoken.models import Token
-from django.contrib.auth import login, logout
-from users.serializers import RegisterSerializer, LoginSerializer
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from knox.models import AuthToken
+from knox.views import LoginView as KnoxLoginView
+from users.serializers import UserSerializer, RegisterSerializer
 
 
-class RegisterView(generics.CreateAPIView):
+class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
-
-class LoginView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
+        user = serializer.save()
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": AuthToken.objects.create(user)[1],
+        })
+
+class LoginView(KnoxLoginView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, format=None):
+        serializer = AuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
         login(request, user)
-        token, _ = Token.objects.get_or_create(user=user)
-        login(request, user)
-        return Response({"token": token.key}, status=status.HTTP_200_OK)
-    
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        request.user.auth_token.delete()
-        logout(request)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-
-class ProfileView(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
+        return super().post(request, format=None)

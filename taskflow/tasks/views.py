@@ -1,34 +1,24 @@
-from rest_framework import viewsets
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
+from rest_framework import generics, pagination
 from tasks.models import Task
 from tasks.serializers import TaskSerializer
 
 
-class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
+class TaskListCreateView(generics.ListCreateAPIView):
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
-
+    pagination_class = pagination.PageNumberPagination
+    pagination_class.page_size = 10
 
     def get_queryset(self):
-        user = self.request.user
-        if user.is_boss:
-            return Task.objects.all()
-        return Task.objects.filter(posted_by=user)
+        queryset = Task.objects.all().order_by("-created_at")
+        user = self.request.query_params.get("posted_by")
+        if user:
+            queryset = Task.objects.filter(posted_by__id=user).order_by("-created_at")
+        return queryset
     
     def perform_create(self, serializer):
         serializer.save(posted_by=self.request.user)
 
-    def perform_update(self, serializer):
-        if self.request.user != serializer.instance.posted_by:
-            raise PermissionDenied("You do not have permission to edit this task.")
-        return super().perform_update(serializer)
-    
-    def perform_destroy(self, instance):
-        if self.request.user != instance.posted_by:
-            raise PermissionDenied("You do not have permission to delete this task.")
-        instance.is_active = False
-        instance.save()
+
+class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TaskSerializer
+    queryset = Task.objects.all()
