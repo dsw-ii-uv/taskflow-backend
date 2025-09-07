@@ -25,7 +25,6 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
     priority = models.IntegerField(choices=Priority.choices, default=Priority.MEDIUM)
-    completed = models.BooleanField(default=True)
     state = models.IntegerField(choices=State.choices, default=State.TO_DO)
     home_tag = models.BooleanField(default=False)
     work_tag = models.BooleanField(default=False)
