@@ -1,6 +1,6 @@
 from rest_framework import generics, pagination
-from taskflow.taskflow.tasks.models import Task
-from taskflow.taskflow.tasks.serializers import TaskSerializer
+from .models import Task
+from .serializers import TaskSerializer
 
 
 class TaskListCreateView(generics.ListCreateAPIView):

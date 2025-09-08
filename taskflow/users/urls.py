@@ -1,5 +1,5 @@
 from django.urls import path
-from taskflow.taskflow.users.views import RegisterView, LoginView
+from .views import RegisterView, LoginView
 from knox import views as knox_views
 
 urlpatterns = [
