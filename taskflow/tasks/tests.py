@@ -1,6 +1,6 @@
 from django.test import TestCase
-from tasks.models import Task
-from users.models import User
+from taskflow.tasks.models import Task
+from taskflow.users.models import User
 
 
 class TaskTestCase(TestCase):
