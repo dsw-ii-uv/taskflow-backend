@@ -44,8 +44,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'knox',
-    'users',
-    'tasks',
+    'taskflow.users',
+    'taskflow.tasks',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +62,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://taskflow-ds.netlify.app",
+    "https://taskflow-backend-3im3.onrender.com",
 ]
 
 ROOT_URLCONF = 'taskflow.urls'
