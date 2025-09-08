@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from taskflow.users.enums import UserGroups
+from taskflow.taskflow.users.enums import UserGroups
 
 
 class IsManager(permissions.BasePermission):
