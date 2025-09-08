@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'knox',
-    'taskflow.users',
-    'taskflow.tasks',
+    'users',
+    'tasks',
 ]
 
 MIDDLEWARE = [
