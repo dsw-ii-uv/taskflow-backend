@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
-from taskflow.users.serializers import UserSerializer, RegisterSerializer
+from taskflow.taskflow.users.serializers import UserSerializer, RegisterSerializer
 
 
 class RegisterView(generics.GenericAPIView):
