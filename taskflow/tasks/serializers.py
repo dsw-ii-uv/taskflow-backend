@@ -27,6 +27,5 @@ class TaskSerializer(serializers.ModelSerializer):
             "work_tag",
             "university_tag",
             "social_tag",
-            "completed",
             ]
         read_only_fields = ["id", "posted_by"]
