@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from tasks.models import Task
-from users.models import User
+from taskflow.tasks.models import Task
+from taskflow.users.models import User
 
 
 class TaskUserSerializer(serializers.ModelSerializer):

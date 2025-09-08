@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
-from users.models import User
+from taskflow.users.models import User
 
 
 class Priority(models.IntegerChoices):
